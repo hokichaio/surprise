@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="app.of.k.mapper.SurpriseMapper">
+	
+	<resultMap id="SurpriseResult" type="app.of.k.dto.Surprise">
+		<result property="id" column="id"/>
+		<result property="receiverAddress" column="receiverAddress"/>
+		<result property="noAddressByInt" column="noAddress"/>
+		<result property="noSponsorByInt" column="noSponsor"/>
+		<result property="statusId" column="statusId"/>
+			<collection property="gift" ofType="app.of.k.dto.Gift">
+				<result property="id" column="giftId"/>
+				<result property="name" column="giftName"/>
+				<result property="price" column="giftPrice"/>
+			</collection>
+			<collection property="receiverList" ofType="app.of.k.dto.People">
+				<result property="id" column="receiverId"/>
+				<result property="name" column="receiverName"/>
+			</collection>
+			<collection property="senderList" ofType="app.of.k.dto.People">
+				<result property="id" column="senderId"/>
+				<result property="name" column="senderName"/>
+				<result property="payment" column="senderPayment"/>
+				<result property="message" column="senderMessage"/>
+				<result property="promoterByInt" column="isPromoter"/>
+			</collection>
+	</resultMap>
+	
+	<select id="getSurpriseById" parameterType="String" resultMap="SurpriseResult">
+		select
+			su.id, su.receiverAddress, su.noAddress, su.noSponsor, su.statusId,
+			gi.id as giftId, gi.name as giftName, gi.price as giftPrice,
+			re.id as receiverId, re.name as receiverName,
+			se.id as senderId, se.name as senderName, se.payment as senderPayment, se.message as senderMessage, se.isPromoter
+		from
+			surprise su,
+			receiver re,
+			sender se,
+			gift gi
+		where
+			su.id = re.surpriseId and
+			su.id = se.surpriseId and
+			su.giftId = gi.id and
+			su.id = #{seqId}
+	</select>
+	
+	<select id="getSurpriseListById" parameterType="String" resultMap="SurpriseResult">
+		select
+			su.id, su.receiverAddress, su.noAddress, su.noSponsor, su.statusId,
+			gi.id as giftId, gi.name as giftName, gi.price as giftPrice,
+			re.id as receiverId, re.name as receiverName,
+			se.id as senderId, se.name as senderName, se.payment as senderPayment, se.message as senderMessage, se.isPromoter
+		from
+			surprise su,
+			receiver re,
+			sender se,
+			gift gi,
+      		(select surpriseId from sender where id = #{id}) target
+		where
+			su.id = re.surpriseId and
+			su.id = se.surpriseId and
+			su.giftId = gi.id and
+			su.id = target.surpriseId
+	</select>
+	
+	<insert id="insertSurprise" parameterType="app.of.k.dto.Surprise" >
+		insert into surprise(
+			id,
+			receiverAddress,
+			noAddress,
+			noSponsor,
+			giftId,
+			statusId
+		) value (
+			#{id},
+			#{receiverAddress},
+			#{noAddressAsInt},
+			#{noSponsorAsInt},
+			#{gift.id},
+			#{statusId}
+		)
+	</insert>
+	
+	<insert id="insertReceiver" parameterType="app.of.k.dto.People" >
+		insert into receiver(
+			surpriseId,
+			id,
+			name
+		) value (
+			#{surpriseId},
+			#{id},
+			#{name}
+		)
+	</insert>
+	
+	<insert id="insertSender" parameterType="app.of.k.dto.People" >
+		insert into sender(
+			surpriseId,
+			id,
+			name,
+			message,
+			payment,
+			isPromoter
+		) value (
+			#{surpriseId},
+			#{id},
+			#{name},
+			#{message},
+			#{payment},
+			#{promoterAsInt}
+		)
+	</insert>
+	
+	<update id="increseSequence">
+		UPDATE surprise_sequence SET id=(id+1);
+	</update>
+	
+	<select id="getSequenceId" resultType="String">
+		SELECT id from surprise_sequence;
+	</select>
+	
+	<update id="updateSurprise" parameterType="app.of.k.dto.Surprise">
+		update 
+			surprise
+		set
+			receiverAddress = #{receiverAddress},
+			noAddress = #{noAddressAsInt},
+			noSponsor = #{noSponsorAsInt},
+			giftId = #{gift.id},
+			statusId = #{statusId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateSender" parameterType="app.of.k.dto.People">
+		update
+			sender
+		set
+			message = #{message},
+			payment = #{payment}
+		where
+			surpriseId = #{surpriseId} and
+			id = #{id}
+	</update>
+</mapper>
