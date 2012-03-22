@@ -140,14 +140,38 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/sendp3", params = "input")
-	public ModelAndView sendP3(Surprise sendForm, HttpServletRequest request) {
-		sendForm.refreshList();
+	public ModelAndView sendP3Input(Surprise sendForm, HttpServletRequest request) {
+		if(!SecurityContext.userSignedIn()) {
+			return loginRedirect("/goto?id=" + sendForm.getId(), request);
+		}
 		String currentUserId = userUtilityService.getUserFacebookIdByUserId(SecurityContext.getCurrentUser().getId());
+		sendForm = surpriseService.getSurpriseById(sendForm.getId());
+		if(!sendForm.isUserInList(currentUserId)) {
+			return home();
+		}
 		if(sendForm.getTempPayment() != null){
 			surpriseService.addPayment(sendForm, currentUserId);
 		}
 		if(sendForm.getTempMessage() != null && !sendForm.getTempMessage().isEmpty()) {
 			surpriseService.addMessage(sendForm, currentUserId);
+		}
+		return gotoSurprise(sendForm.getId(), request);
+	}
+	
+	@RequestMapping(value = "/sendp3")
+	public ModelAndView sendP3(Surprise sendForm, HttpServletRequest request) {
+		if(!SecurityContext.userSignedIn()) {
+			return loginRedirect("/goto?id=" + sendForm.getId(), request);
+		}
+		String currentUserId = userUtilityService.getUserFacebookIdByUserId(SecurityContext.getCurrentUser().getId());
+		sendForm = surpriseService.getSurpriseById(sendForm.getId());
+		if(!sendForm.isUserInList(currentUserId)) {
+			return home();
+		}
+		if(sendForm.isPaid()) {
+			ModelAndView modelAndView = new ModelAndView();
+			modelAndView.addObject("sendForm", sendForm);
+			modelAndView.setViewName("main/sendp3");
 		}
 		return gotoSurprise(sendForm.getId(), request);
 	}

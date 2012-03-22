@@ -107,18 +107,6 @@ public class Surprise {
 		this.tempMessageToSponsor = tempMessageToSponsor;
 	}
 
-//	public void setCurrentUserPayment(String currentUserId) {
-//		if(tempPayment != null) {
-//			for(People ppl : senderList) {
-//				if(ppl.getId().equals(currentUserId)) {
-//					ppl.setPayment(ppl.getPayment() + tempPayment);
-//					tempPayment = null;
-//					return;
-//				}
-//			}
-//		}
-//	}
-	
 	public Integer getRemainingBill() {
 		Integer remainingBill;
 		if(this.gift != null) {
@@ -198,6 +186,15 @@ public class Surprise {
 
 	public void setTempMessage(String tempMessage) {
 		this.tempMessage = tempMessage;
+	}
+	
+	public boolean isPaid() {
+		int price = this.gift.getPrice();
+		int paid = 0;
+		for(People ppl : senderList) {
+			paid += ppl.getPayment();
+		}
+		return (price-paid==0);
 	}
 	
 }

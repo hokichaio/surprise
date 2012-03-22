@@ -24,8 +24,6 @@ public class SurpriseServiceImpl implements SurpriseService {
 	@Override
 	public void insertSurprise(Surprise surprise) {
 		
-		
-		
 		surpriseMapper.insertSurprise(surprise);
 		for(People ppl : surprise.getReceiverList()) {
 			ppl.setSurpriseId(surprise.getId());
@@ -41,7 +39,6 @@ public class SurpriseServiceImpl implements SurpriseService {
 	@Override
 	public void addPayment(Surprise surprise, String id) {
 		int bill = surprise.getTempPayment();
-		surpriseMapper.updateSurprise(surprise);
 		for(People ppl : surprise.getSenderList()) {
 			if(ppl.getId().equals(id)){
 				ppl.setSurpriseId(surprise.getId());
@@ -55,7 +52,6 @@ public class SurpriseServiceImpl implements SurpriseService {
 	@Override
 	public void addMessage(Surprise surprise, String id) {
 		String message = surprise.getTempMessage();
-		surpriseMapper.updateSurprise(surprise);
 		for(People ppl : surprise.getSenderList()) {
 			if(ppl.getId().equals(id)){
 				ppl.setSurpriseId(surprise.getId());
