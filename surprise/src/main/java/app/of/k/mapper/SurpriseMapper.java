@@ -7,6 +7,9 @@ import app.of.k.dto.Surprise;
 
 public interface SurpriseMapper {
 	
+	public void addPayment(People sender);
+	public void addMessage(People ppl);
+	
 	public Surprise getSurpriseById(String id);
 	
 	public void insertSurprise(Surprise surprise);
@@ -20,8 +23,6 @@ public interface SurpriseMapper {
 	public String getSequenceId();
 	
 	public void updateSurprise(Surprise surprise);
-	
-	public void updateSender(People ppl);
 	
 	public List<Surprise> getSurpriseListById(String id);
 

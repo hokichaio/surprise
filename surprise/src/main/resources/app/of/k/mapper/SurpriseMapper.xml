@@ -132,12 +132,21 @@
 			id = #{id}
 	</update>
 	
-	<update id="updateSender" parameterType="app.of.k.dto.People">
+	<update id="addMessage" parameterType="app.of.k.dto.People">
 		update
 			sender
 		set
-			message = #{message},
-			payment = #{payment}
+			message = #{message}
+		where
+			surpriseId = #{surpriseId} and
+			id = #{id}
+	</update>
+	
+	<update id="addPayment" parameterType="app.of.k.dto.People">
+		update
+			sender
+		set
+			payment = payment + #{payment}
 		where
 			surpriseId = #{surpriseId} and
 			id = #{id}

@@ -67,7 +67,7 @@
 					    <form:input path="receiverList[0].name" type="hidden" />
 					    <form:input path="tempMessageToSponsor" type="hidden" />
 					    <div class="form-actions">
-				            <button type="submit" class="btn">Cancel</button>
+				            <button type="submit" class="btn" name="cancel">Cancel</button>
 				            <button type="button" class="btn btn-primary" onclick="next();">Next</button>
 				            <input type="submit" id="submitNext" style="visibility:hidden;">
 				        </div>
@@ -94,7 +94,7 @@
   });
   $(function() {
 	  $("#noSponsor").click(function() {
-			if($(noSponsor).is(':checked')) {
+			if($("#noSponsor").is(':checked')) {
 				$("#friend_input").attr("disabled", "disabled" );
 				$("#messageToSponsor").attr("disabled", "disabled" );
 				$("#friendList").remove();
@@ -124,7 +124,7 @@
 	FB.init({appId: '112651685520077', xfbml: true, cookie: true});
 	
 	next = function() {
-		if(!$(noSponsor).is(':checked')) {
+		if(!$("#noSponsor").is(':checked')) {
 			FB.ui({
 		          method: 'send',
 		          name: 'Send this with me hey!',
@@ -137,6 +137,8 @@
 		        } else {
 		        }
 		    });
+		} else {
+			$("#submitNext").click();
 		}
 	}
 	getArray = function() {

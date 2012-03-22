@@ -60,7 +60,7 @@
 						    		<td width="80">
 						    			<c:if test="${userFbId == sender.id}">
 						    				<i class="icon-shopping-cart"></i><a onclick="pay()">Pay</a><br/>
-						    				<i class="icon-pencil"></i><a onclick="writeMessage(${idx.index})">Message</a>
+						    				<i class="icon-pencil"></i><a onclick="writeMessage()">Message</a>
 						    			</c:if>	
 						    		</td>
 						    		<td>
@@ -71,7 +71,7 @@
 						    	<form:input path="senderList[${idx.index}].name" type="hidden" />
 						    	<form:input path="senderList[${idx.index}].payment" type="hidden" />
 						    	<form:input path="senderList[${idx.index}].promoter" type="hidden" />
-						    	<form:input id="message${idx.index}" path="senderList[${idx.index}].message" type="hidden" />
+						    	<form:input path="senderList[${idx.index}].message" type="hidden" />
 							</c:forEach>
 						</table>
 					    
@@ -81,8 +81,7 @@
 					    <form:input path="gift.price" type="hidden" value="${gift.price}"/>
 					    <form:input path="receiverList[0].id" type="hidden" />
 					    <form:input path="receiverList[0].name" type="hidden" />
-					    <div class="form-actions" style="visibility:hidden;">
-				            <button type="submit" class="btn">Cancel</button>
+					    <div id="form-actions" class="form-actions" style="visibility:hidden;">
 				            <button type="submit" class="btn btn-primary">Next</button>
 				        </div>
 				    </fieldset>
@@ -92,6 +91,7 @@
 					<div id="input_dialog_message" style="display:none; text-align:center;'">
 						<textarea id="message" cols="200" rows="8"></textarea>
 					</div>
+					<form:input type="hidden" id="tempMessage" path="tempMessage" />
 					<form:input type="hidden" id="tempPayment" path="tempPayment" />
 					<input type="submit" id="submitInput" name="input" style="visibility:hidden;" />
 				</form:form>
@@ -100,7 +100,7 @@
 	</div>
 	
 <script>
-writeMessage = function(i) {
+writeMessage = function() {
 	$("#input_dialog_message").dialog(
 	{
 		modal: true,
@@ -114,7 +114,7 @@ writeMessage = function(i) {
 			},
 			"OK": function() {
 				$(this).dialog('close');
-				$("#message" + i).val($("#message").val());
+				$("#tempMessage").val($("#message").val());
 				$("#submitInput").click();
 			},
 		}
@@ -140,6 +140,11 @@ pay = function() {
 		}
 	});
 }
+$(function() {
+	if(${sendForm.remainingBill == 0}) {
+		$("#form-actions").css("visibility","visible");
+	}
+});
 </script>
 </body>
 </html>

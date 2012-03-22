@@ -10,7 +10,9 @@ public interface SurpriseService {
 	
 	public void insertSurprise(Surprise surprise);
 	
-	public void updateSurprise(Surprise surprise);
+	public void addPayment(Surprise surprise, String id);
+	
+	public void addMessage(Surprise surprise, String id);
 	
 	public List<Surprise> getSurpriseListById(String id);
 	

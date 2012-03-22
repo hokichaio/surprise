@@ -39,12 +39,29 @@ public class SurpriseServiceImpl implements SurpriseService {
 	}
 	
 	@Override
-	public void updateSurprise(Surprise surprise) {
-		
+	public void addPayment(Surprise surprise, String id) {
+		int bill = surprise.getTempPayment();
 		surpriseMapper.updateSurprise(surprise);
 		for(People ppl : surprise.getSenderList()) {
-			ppl.setSurpriseId(surprise.getId());
-			surpriseMapper.updateSender(ppl);
+			if(ppl.getId().equals(id)){
+				ppl.setSurpriseId(surprise.getId());
+				ppl.setPayment(bill);
+				surpriseMapper.addPayment(ppl);
+			}
+		}
+		
+	}
+	
+	@Override
+	public void addMessage(Surprise surprise, String id) {
+		String message = surprise.getTempMessage();
+		surpriseMapper.updateSurprise(surprise);
+		for(People ppl : surprise.getSenderList()) {
+			if(ppl.getId().equals(id)){
+				ppl.setSurpriseId(surprise.getId());
+				ppl.setMessage(message);
+				surpriseMapper.addMessage(ppl);
+			}
 		}
 		
 	}

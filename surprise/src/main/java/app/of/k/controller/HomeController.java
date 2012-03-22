@@ -121,6 +121,11 @@ public class HomeController {
 		
 	}
 	
+	@RequestMapping(value = "/sendp2", params = "cancel")
+	public ModelAndView sendP2Cancel(Surprise sendForm) {
+		return giftDetail(sendForm.getGift().getId(), new Gift());
+	}
+	
 	@RequestMapping(value = "/sendp2")
 	public ModelAndView sendP2(Surprise sendForm) {
 		sendForm.refreshList();
@@ -135,16 +140,16 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/sendp3", params = "input")
-	public ModelAndView sendP3(Surprise sendForm) {
+	public ModelAndView sendP3(Surprise sendForm, HttpServletRequest request) {
 		sendForm.refreshList();
 		String currentUserId = userUtilityService.getUserFacebookIdByUserId(SecurityContext.getCurrentUser().getId());
-		sendForm.setCurrentUserPayment(currentUserId);
-		surpriseService.updateSurprise(sendForm);
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.addObject("userFbId", currentUserId);
-		modelAndView.addObject("sendForm", sendForm);
-		modelAndView.setViewName("main/sendp2");
-		return modelAndView;
+		if(sendForm.getTempPayment() != null){
+			surpriseService.addPayment(sendForm, currentUserId);
+		}
+		if(sendForm.getTempMessage() != null && !sendForm.getTempMessage().isEmpty()) {
+			surpriseService.addMessage(sendForm, currentUserId);
+		}
+		return gotoSurprise(sendForm.getId(), request);
 	}
 	
 	@RequestMapping(value = "/goto")
@@ -153,11 +158,14 @@ public class HomeController {
 		if(!SecurityContext.userSignedIn()) {
 			return loginRedirect("/goto?id=" + id, request);
 		}
+		String currentUserId = userUtilityService.getUserFacebookIdByUserId(SecurityContext.getCurrentUser().getId());
 		Surprise sendForm = surpriseService.getSurpriseById(id);
 		if(sendForm == null) {
 			return home();
+		} else if(!sendForm.isUserInList(currentUserId)) {
+			return home();
 		}
-		modelAndView.addObject("userFbId", userUtilityService.getUserFacebookIdByUserId(SecurityContext.getCurrentUser().getId()));
+		modelAndView.addObject("userFbId", currentUserId);
 		modelAndView.addObject("sendForm", sendForm);
 		modelAndView.setViewName("main/sendp2");
 		return modelAndView;
